@@ -90,7 +90,7 @@ namespace CommandCenter.Controllers
         {
             try
             {
-                var subscriptions = await marketplaceClient.Fulfillment.ListSubscriptionsAsync(cancellationToken: cancellationToken).ToListAsync();
+                var subscriptions = await this.marketplaceClient.Fulfillment.ListSubscriptionsAsync(cancellationToken: cancellationToken).ToListAsync();
 
                 var subscriptionsViewModel = subscriptions.Select(SubscriptionViewModel.FromSubscription)
                     .Where(s => s.State != SubscriptionStatusEnum.Unsubscribed || this.options.ShowUnsubscribed);
@@ -112,7 +112,7 @@ namespace CommandCenter.Controllers
 
                 return this.View(newViewModel.OrderByDescending(s => s.SubscriptionName));
             }
-            catch (Exception ex)
+            catch
             {
                 this.ModelState.AddModelError(string.Empty, "Something went wrong, please check logs!");
                 return this.View(new List<SubscriptionViewModel>());

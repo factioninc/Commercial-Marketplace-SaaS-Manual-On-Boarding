@@ -43,7 +43,7 @@ namespace CommandCenter
         public AzureQueueOptions AzureQueue { get; set; }
 
          /// <summary>
-        /// Gets or sets the UseMeteredDimensions.
+        /// Gets or sets a value indicating whether the UseMeteredDimensions reporting is enabled.
         /// </summary>
         public bool EnableDimensionMeterReporting { get; set; }
 

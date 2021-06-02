@@ -102,7 +102,7 @@ namespace CommandCenter
                 JwtBearerDefaults.AuthenticationScheme,
                 options =>
                 {
-                    // Need to override the ValidAudience, since the incoming token has the app ID as the aud claim. 
+                    // Need to override the ValidAudience, since the incoming token has the app ID as the aud claim.
                     // Library expects it to be api://<appId> format.
                                         options.TokenValidationParameters.ValidAudience = this.configuration["WebHookTokenParameters:ClientId"];
                                         options.TokenValidationParameters.ValidIssuer = $"https://sts.windows.net/{this.configuration["WebHookTokenParameters:TenantId"]}/";
