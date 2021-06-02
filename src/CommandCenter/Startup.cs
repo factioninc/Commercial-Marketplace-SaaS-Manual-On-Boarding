@@ -3,13 +3,15 @@
 
 namespace CommandCenter
 {
+    using System.Threading.Tasks;
+    using Azure.Identity;
     using CommandCenter.Authorization;
     using CommandCenter.AzureQueues;
+    using CommandCenter.DimensionUsageStore;
     using CommandCenter.Mail;
     using CommandCenter.Marketplace;
     using CommandCenter.OperationsStore;
     using CommandCenter.Webhook;
-
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -23,12 +25,9 @@ namespace CommandCenter
     using Microsoft.Extensions.Hosting;
     using Microsoft.Identity.Web;
     using Microsoft.Identity.Web.UI;
-    using Microsoft.Marketplace.SaaS;
-    using System.Threading.Tasks;
-    using Serilog;
     using Microsoft.Marketplace.Metering;
-    using CommandCenter.DimensionUsageStore;
-    using Azure.Identity;
+    using Microsoft.Marketplace.SaaS;
+    using Serilog;
 
     /// <summary>
     /// ASP.NET core startup class.
@@ -106,7 +105,7 @@ namespace CommandCenter
                     // Need to override the ValidAudience, since the incoming token has the app ID as the aud claim. 
                     // Library expects it to be api://<appId> format.
                                         options.TokenValidationParameters.ValidAudience = this.configuration["WebHookTokenParameters:ClientId"];
-                    options.TokenValidationParameters.ValidIssuer = $"https://sts.windows.net/{this.configuration["WebHookTokenParameters:TenantId"]}/";
+                                        options.TokenValidationParameters.ValidIssuer = $"https://sts.windows.net/{this.configuration["WebHookTokenParameters:TenantId"]}/";
                 });
 
             // Enable AAD sign on on the landing page.
