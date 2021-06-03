@@ -138,5 +138,10 @@ namespace CommandCenter.Models
         /// </summary>
         [Display(Name ="Technical details")]
         public FactionTechnicalDetails TechnicalDetails { get; private set; } = new FactionTechnicalDetails();
+
+        /// <summary>
+        /// Gets or sets the Faction Custom Bundle Details, if appropriate.
+        /// </summary>
+        public FactionCustomBundleModel CustomBundleOptions { get; set; }
     }
 }
