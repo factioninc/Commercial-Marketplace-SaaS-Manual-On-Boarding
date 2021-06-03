@@ -123,6 +123,15 @@ namespace CommandCenter.Controllers
                 provisioningModel.Email = this.User.Identity.GetUserEmail();
                 provisioningModel.BusinessUnitContactEmail = this.User.Identity.GetUserEmail();
 
+                if (string.Equals(provisioningModel.PlanId, "custom_bundle", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    provisioningModel.CustomBundleOptions = new FactionCustomBundleModel();
+                }
+                else
+                {
+                    provisioningModel.CustomBundleOptions = null;
+                }
+
                 return this.View(provisioningModel);
             }
 
