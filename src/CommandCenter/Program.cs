@@ -36,14 +36,14 @@ namespace CommandCenter
         public static int Main(string[] args)
         {
             // Add storage account logging if desired.
-            //CloudStorageAccount storage = CloudStorageAccount.Parse("");
-
+            // CloudStorageAccount storage = CloudStorageAccount.Parse("");
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                 .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Information)
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
+
                 // Remove the commeant below if using storage account to log.
                 // .WriteTo.AzureTableStorage(storage)
                 .CreateLogger();

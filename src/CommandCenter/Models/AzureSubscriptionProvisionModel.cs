@@ -27,6 +27,7 @@ namespace CommandCenter.Models
         /// Gets or sets business contact email.
         /// </summary>
         [Display(Name = "Business unit contact email")]
+        [DataType(DataType.EmailAddress)]
         public string BusinessUnitContactEmail { get; set; }
 
         /// <summary>
@@ -90,6 +91,7 @@ namespace CommandCenter.Models
         /// Gets or sets the purchaser email.
         /// </summary>
         [Display(Name = "Purchaser email")]
+        [DataType(DataType.EmailAddress)]
         public string PurchaserEmail { get; set; }
 
         /// <summary>
@@ -97,5 +99,44 @@ namespace CommandCenter.Models
         /// </summary>
         [Display(Name = "Purchaser AAD TenantId")]
         public Guid PurchaserTenantId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Faction Location.
+        /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
+        [Display(Name="Location")]
+        public FactionLocation Location { get; set; }
+
+        /// <summary>
+        /// Gets or sets the technical contact name.
+        /// </summary>
+        [Display(Name="Technical contact name")]
+        public string TechnicalContactName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the technical contact email.
+        /// </summary>
+        [Display(Name="Technical contact email")]
+        [DataType(DataType.EmailAddress)]
+        public string TechnicalContactEmail { get; set; }
+
+        /// <summary>
+        /// Gets or sets the technical contact phone number.
+        /// </summary>
+        [Display(Name="Technical contact phone number")]
+        [DataType(DataType.PhoneNumber)]
+        public string TechnicalContactPhone { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether there are existing spend commitments.
+        /// </summary>
+        [Display(Name="Do you have Azure spend commitments via an existing Microsoft agreement?")]
+        public bool ExistingSpendCommitments { get; set; }
+
+        /// <summary>
+        /// Gets the details of the required Faction Technical Details.
+        /// </summary>
+        [Display(Name ="Technical details")]
+        public FactionTechnicalDetails TechnicalDetails { get; private set; } = new FactionTechnicalDetails();
     }
 }

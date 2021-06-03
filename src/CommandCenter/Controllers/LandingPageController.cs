@@ -145,6 +145,11 @@ namespace CommandCenter.Controllers
                 throw new ArgumentNullException(nameof(provisionModel));
             }
 
+            if (!this.ModelState.IsValid)
+            {
+                return this.View();
+            }
+
             var urlBase = $"{this.Request.Scheme}://{this.Request.Host}";
             this.options.BaseUrl = new Uri(urlBase);
             try
