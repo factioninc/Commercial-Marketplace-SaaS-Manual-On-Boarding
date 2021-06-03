@@ -10,12 +10,16 @@ namespace CommandCenter.Controllers
     using CommandCenter.Models;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("api/{controller}")]
     /// <summary>
     /// Custom Bundle Options.
     /// </summary>
+    [Route("api/{controller}")]
     public class FactionCustomBundleOptionsController : Controller
     {
+        /// <summary>
+        /// Default Get for Faction Custom Bundle Options.
+        /// </summary>
+        /// <returns>The default view.</returns>
         public IActionResult Index()
         {
             return this.View();
