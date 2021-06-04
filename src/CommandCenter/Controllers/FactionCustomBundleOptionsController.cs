@@ -7,6 +7,7 @@ namespace CommandCenter.Controllers
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using CommandCenter.CustomBundle;
     using CommandCenter.Models;
     using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +17,20 @@ namespace CommandCenter.Controllers
     [Route("api/{controller}")]
     public class FactionCustomBundleOptionsController : Controller
     {
+        private ICustomBundleBandwidthService bandwidthService;
+        private ICustomBundleStorageSizeService storageService;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FactionCustomBundleOptionsController"/> class.
+        /// </summary>
+        /// <param name="bandwidthService">The instance of the class implementing the <see cref="ICustomBundleBandwidthService"/> interface.</param>
+        /// <param name="storageService">The instance of the class implementing the <see cref="ICustomBundleStorageSizeService"/> interface.</param>
+        public FactionCustomBundleOptionsController(ICustomBundleBandwidthService bandwidthService, ICustomBundleStorageSizeService storageService)
+        {
+            this.bandwidthService = bandwidthService;
+            this.storageService = storageService;
+        }
+
         /// <summary>
         /// Default Get for Faction Custom Bundle Options.
         /// </summary>
@@ -31,15 +46,15 @@ namespace CommandCenter.Controllers
         /// <param name="performanceTier">The performance tier identifier used to determine the available options.</param>
         /// <returns>An instance of the <see cref="CustomBundleOptionsModel"/> which contains the avaiable options for the given performance tier.</returns>
         [HttpGet]
-        public IActionResult GetCustomBundleOptions([FromQuery] string performanceTier)
+        public async Task<IActionResult> GetCustomBundleOptions([FromQuery] string performanceTier)
         {
             var returnValue = new CustomBundleOptionsModel();
             FactionCustomPerformanceTier tier;
             if (Enum.TryParse<FactionCustomPerformanceTier>(performanceTier, out tier))
             {
                 // These are placeholder options and will be replaced with values from a service/lookup.
-                returnValue.PossibleBandwidthOptions = new string[] { "10 GB", "20 GB", "30 GB", "40 GB", "50+ GB" };
-                returnValue.PossibleStorageSizes = new string[] { "162 TB", "252 TB", "342 TB", "432 TB", "522 TB", "612 TB", "650+ TB" };
+                returnValue.PossibleBandwidthOptions = await this.bandwidthService.GetBandwidthOptionsForTier(tier);
+                returnValue.PossibleStorageSizes = await this.storageService.GetStorageSizesForPerformanceTier(tier);
             }
 
             return this.Ok(returnValue);
