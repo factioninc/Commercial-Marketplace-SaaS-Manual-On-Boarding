@@ -7,6 +7,7 @@ namespace CommandCenter
     using Azure.Identity;
     using CommandCenter.Authorization;
     using CommandCenter.AzureQueues;
+    using CommandCenter.CustomBundle;
     using CommandCenter.DimensionUsageStore;
     using CommandCenter.Mail;
     using CommandCenter.Marketplace;
@@ -169,6 +170,9 @@ namespace CommandCenter
             {
                 services.TryAddScoped<IMarketplaceNotificationHandler, AzureQueueNotificationHandler>();
             }
+
+            services.TryAddScoped<ICustomBundleBandwidthService, CustomBundleBandwidthService>();
+            services.TryAddScoped<ICustomBundleStorageSizeService, CustomBundleStorageSizeService>();
 
             services.AddAuthorization(
                 options => options.AddPolicy(
