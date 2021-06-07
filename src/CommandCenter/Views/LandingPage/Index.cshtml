@@ -14,10 +14,8 @@
 }
 else
 {
-    <p>The publisher can design a form like below to capture information from the subscriber to kick off the onboarding process for the new customer.</p>
-
-    <hr />
-
+    <p>Please answer the following questions below.  These items are needed in order to properly set up your selected plan.  Once submitted, Faction resources will begin the setup process.</p>
+    <br />
     <span class="text-danger">@Html.ValidationSummary(false)</span>
 
     <form asp-controller="LandingPage" asp-action="Index">
@@ -27,28 +25,126 @@ else
                     <div class="panel panel-default">
                         <div class="row">
                             <div class="col-sm-3">
-                                @Html.DisplayNameFor(model => model.Email)
+                                @Html.DisplayNameFor(model => model.Location)
                             </div>
                             <div class="col-sm-9">
-                                @Html.DisplayFor(model => model.Email)
-                                <input asp-for="Email" type="hidden" class="form-control" />
+                                <select asp-for="Location" asp-items="Html.GetEnumSelectList<FactionLocation>()" class="form-control">
+                                </select>
+
                             </div>
                         </div>
-
+                        @if (Model.CustomBundleOptions != null)
+                        {
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    @Html.DisplayNameFor(model => model.CustomBundleOptions.RequestedPerformanceTier)
+                                </div>
+                                <div class="col-sm-9">
+                                    <select name="performanceTierDropdown"
+                                            id="performanceTierDropdown"
+                                            asp-for="CustomBundleOptions.RequestedPerformanceTier"
+                                            asp-items="Html.GetEnumSelectList<FactionCustomPerformanceTier>()"
+                                            class="form-control">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    @Html.DisplayNameFor(model => model.CustomBundleOptions.RequestedStorageSize)
+                                </div>
+                                <div class="col-sm-9">
+                                    <select name="storageSizeDropdown"
+                                            id="storageSizeDropdown"
+                                            asp-for="CustomBundleOptions.RequestedStorageSize"
+                                            class="form-control">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    @Html.DisplayNameFor(model => model.CustomBundleOptions.RequestedBandwidth)
+                                </div>
+                                <div class="col-sm-9">
+                                    <select name="bandwidthDropdown"
+                                            id="bandwidthDropdown"
+                                            asp-for="CustomBundleOptions.RequestedBandwidth"
+                                            class="form-control">
+                                    </select>
+                                </div>
+                            </div>
+                        }
                         <div class="row">
                             <div class="col-sm-3">
-                                @Html.DisplayNameFor(model => model.FullName)
+                                @Html.DisplayNameFor(model => model.TechnicalContactName)
                             </div>
                             <div class="col-sm-9">
-                                @Html.DisplayFor(model => model.FullName)
-                                <input asp-for="FullName" type="hidden" class="form-control" />
+                                <input asp-for="TechnicalContactName" type="text" class="form-control" />
                             </div>
                         </div>
-
+                        <div class="row">
+                            <div class="col-sm-3">
+                                @Html.DisplayNameFor(model => model.TechnicalContactEmail)
+                            </div>
+                            <div class="col-sm-9">
+                                <input asp-for="TechnicalContactEmail" type="email" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                @Html.DisplayNameFor(model => model.TechnicalContactPhone)
+                            </div>
+                            <div class="col-sm-9">
+                                <input asp-for="TechnicalContactPhone" type="text" class="form-control" />
+                            </div>
+                        </div>
                     </div>
 
                     <div class="panel panel-default">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h5>Technical Details:</h5>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                @Html.DisplayNameFor(model => model.TechnicalDetails.RequestedShareName)
+                            </div>
+                            <div class="col-sm-9">
+                                <input asp-for="TechnicalDetails.RequestedShareName" type="text" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                @Html.DisplayNameFor(model => model.TechnicalDetails.SupportNFS)
+                            </div>
+                            <div class="col-sm-9">
+                                <input asp-for="TechnicalDetails.SupportNFS" type="checkbox" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                @Html.DisplayNameFor(model => model.TechnicalDetails.SupportCIFS)
+                            </div>
+                            <div class="col-sm-9">
+                                <input asp-for="TechnicalDetails.SupportCIFS" type="checkbox" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                @Html.DisplayNameFor(model => model.TechnicalDetails.RequestedSubnet)
+                            </div>
+                            <div class="col-sm-9">
+                                <input asp-for="TechnicalDetails.RequestedSubnet" type="text" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
 
+                    <div class="panel panel-default">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h5>Aure Information</h5>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-sm-3">
                                 @Html.DisplayNameFor(model => model.OfferId)
@@ -68,17 +164,6 @@ else
                                 <input asp-for="PlanId" type="hidden" class="form-control" />
                             </div>
                         </div>
-
-                        <div class="row">
-                            <div class="col-sm-3">
-                                @Html.DisplayNameFor(model => model.PurchaserEmail)
-                            </div>
-                            <div class="col-sm-9">
-                                @Html.DisplayFor(model => model.PurchaserEmail)
-                                <input asp-for="PurchaserEmail" type="hidden" class="form-control" />
-                            </div>
-                        </div>
-
                         <div class="row">
                             <div class="col-sm-3">
                                 @Html.DisplayNameFor(model => model.PurchaserTenantId)
@@ -88,22 +173,6 @@ else
                                 <input asp-for="PurchaserTenantId" type="hidden" class="form-control" />
                             </div>
                         </div>
-
-                        @if (Model.SubscriptionStatus == SubscriptionStatusEnum.Subscribed)
-                        {
-                            <div class="row">
-                                <div class="col-sm-3">
-                                    @Html.DisplayNameFor(model => model.AvailablePlans)
-                                </div>
-
-                                <div class="col-sm-9">
-
-                                    <select asp-for="NewPlanId" asp-items="@(new SelectList(Model.AvailablePlans, "PlanId", "DisplayName"))" class="form-control">
-                                        <option value="">Choose a new plan, or plan you wish to be on.</option>
-                                    </select>
-                                </div>
-                            </div>
-                        }
 
                         <div class="row">
                             <div class="col-sm-3">
@@ -124,33 +193,12 @@ else
                                 <input asp-for="SubscriptionName" type="hidden" class="form-control" />
                             </div>
                         </div>
-                    </div>
-                    <div class="panel panel-default">
                         <div class="row">
                             <div class="col-sm-3">
-                                @Html.DisplayNameFor(model => model.Region)
-                            </div>
-                            <div class="col-sm-3">
-                                <select asp-for="Region" asp-items="Html.GetEnumSelectList<TargetContosoRegionEnum>()" class="form-control">
-                                    <option selected="selected" value="">Please select</option>
-                                </select>
-                            </div>
-                            <div class="col-sm-9"></div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-sm-3">
-                                @Html.DisplayNameFor(model => model.BusinessUnitContactEmail)
+                                @Html.DisplayNameFor(model => model.ExistingSpendCommitments)
                             </div>
                             <div class="col-sm-9">
-                                <div class="row">
-                                    <div class="col-sm-3">
-                                        <input asp-for="BusinessUnitContactEmail" type="email" class="form-control" />
-                                    </div>
-                                    <div class="col-sm-9">
-                                        <p>*The purchaser (who sees this page) can be different than the actual user of the solution.</p>
-                                    </div>
-                                </div>
+                                <input asp-for="ExistingSpendCommitments" type="checkbox" class="form-control" />
                             </div>
                         </div>
                     </div>
@@ -166,4 +214,40 @@ else
                    class="btn btn-primary" />
         </div>
     </form>
-}
+    @if (Model.CustomBundleOptions != null)
+    {
+        @section Scripts
+        {
+            <script type="text/javascript">
+                function loadOptions() {
+                    var url = '/api/FactionCustomBundleOptions?performanceTier=' + $('#performanceTierDropdown option:selected').text();
+
+                    $.ajax({
+                        url: url,
+                        type: "get",
+                        cache: false,
+                    }).done(function (data) {
+                        var sizeDropDown = $('#storageSizeDropdown');
+                        sizeDropDown.empty();
+
+                        $.each(data["possibleStorageSizes"], function (index, size) {
+                            sizeDropDown.append(
+                            $("<option>", { value: size }).text(size)
+                            );
+                        });
+                        var bandwidthDropdown = $('#bandwidthDropdown');
+                        bandwidthDropdown.empty();
+                        $.each(data["possibleBandwidthOptions"], function (index, bandwidth) {
+                            bandwidthDropdown.append(
+                            $("<option>", { value: bandwidth }).text(bandwidth)
+                            );
+                        });
+                    });
+                };
+
+                $(function () { loadOptions(); });
+                $('#performanceTierDropdown').change(function () { loadOptions(); });
+            </script>
+            }
+        }
+    }
