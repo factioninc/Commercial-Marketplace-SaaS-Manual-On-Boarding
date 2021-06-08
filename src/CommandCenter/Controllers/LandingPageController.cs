@@ -137,6 +137,11 @@ namespace CommandCenter.Controllers
 
             this.ModelState.AddModelError(string.Empty, "Cannot resolve subscription");
             return this.View();
+
+            // This is just for testing or Demo purposes
+            // var model = new AzureSubscriptionProvisionModel();
+            // model.CustomBundleOptions = new FactionCustomBundleModel();
+            // return this.View(model);
         }
 
         /// <summary>
