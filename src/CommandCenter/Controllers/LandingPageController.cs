@@ -68,6 +68,7 @@ namespace CommandCenter.Controllers
         /// <returns>Action result.</returns>
         public async Task<ActionResult> Index(string token, CancellationToken cancellationToken)
         {
+            /*
             if (string.IsNullOrEmpty(token))
             {
                 this.ModelState.AddModelError(string.Empty, "Token URL parameter cannot be empty");
@@ -137,11 +138,12 @@ namespace CommandCenter.Controllers
 
             this.ModelState.AddModelError(string.Empty, "Cannot resolve subscription");
             return this.View();
+             */
 
             // This is just for testing or Demo purposes
-            // var model = new AzureSubscriptionProvisionModel();
-            // model.CustomBundleOptions = new FactionCustomBundleModel();
-            // return this.View(model);
+            var model = new AzureSubscriptionProvisionModel();
+            model.CustomBundleOptions = new FactionCustomBundleModel();
+            return this.View(model);
         }
 
         /// <summary>
