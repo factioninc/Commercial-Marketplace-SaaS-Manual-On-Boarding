@@ -25,6 +25,7 @@ namespace CommandCenter.Mail
     public class CommandCenterEMailHelper : IMarketplaceNotificationHandler
     {
         private const string MailLinkControllerName = "MailLink";
+        private const string NotProvidedValue = "Not Provided";
 
         private readonly IMarketplaceSaaSClient marketplaceClient;
 
@@ -88,7 +89,7 @@ namespace CommandCenter.Mail
                 "<p>New subscription. Please take the required action, then return to this email and click the following link to confirm. ";
             emailText += $"{this.BuildALink("Activate", queryParams, "Click here to activate subscription")}.</p>";
             emailText +=
-                $"<div> <p> Details are</p> <div> {BuildTable(JObject.Parse(JsonConvert.SerializeObject(provisionModel)))}</div></div>";
+                $"<div> <p> Details are</p> <div> {BuildTable(provisionModel)}</div></div>";
 
             await this.SendEmailAsync(
                 () => $"New subscription, {provisionModel.SubscriptionName}",
@@ -239,6 +240,48 @@ namespace CommandCenter.Mail
                 .Select(p => $"<tr><th align=\"left\"> {p.Name} </th><th align=\"left\"> {p.Value}</th></tr>")
                 .Aggregate((head, tail) => head + tail);
             return $"<table border=\"1\" align=\"left\">{tableContents}</table>";
+        }
+
+        private static string BuildTable(AzureSubscriptionProvisionModel model)
+        {
+            var returnString = $"<table border=\"1\" align=\"left\">";
+
+            if (model != null)
+            {
+                returnString += $"<tr><th align=\"left\">{model.GetDisplayName(nameof(model.Location))}</th><th align=\"left\"> {model.Location.GetDisplayName()}</th></tr>";
+                returnString += $"<tr><th align=\"left\">{model.GetDisplayName(nameof(model.PlanId))}</th><th align=\"left\"> {model?.PlanId ?? NotProvidedValue}</th></tr>";
+                if (model.CustomBundleOptions != null)
+                {
+                    var cbo = model.CustomBundleOptions;
+                    returnString += $"<tr><th align=\"left\">{cbo.GetDisplayName(nameof(cbo.RequestedPerformanceTier))}</th><th align=\"left\"> {cbo.RequestedPerformanceTier.GetDisplayName()}</th></tr>";
+                    returnString += $"<tr><th align=\"left\">{cbo.GetDisplayName(nameof(cbo.RequestedBandwidth))}</th><th align=\"left\"> {cbo?.RequestedBandwidth ?? NotProvidedValue}</th></tr>";
+                    returnString += $"<tr><th align=\"left\">{cbo.GetDisplayName(nameof(cbo.RequestedStorageSize))}</th><th align=\"left\"> {cbo?.RequestedStorageSize ?? NotProvidedValue}</th></tr>";
+                }
+
+                returnString += $"<tr><th align=\"left\">{model.GetDisplayName(nameof(model.TechnicalContactName))}</th><th align=\"left\"> {model?.TechnicalContactName ?? NotProvidedValue}</th></tr>";
+                returnString += $"<tr><th align=\"left\">{model.GetDisplayName(nameof(model.TechnicalContactEmail))}</th><th align=\"left\"> {model?.TechnicalContactEmail ?? NotProvidedValue}</th></tr>";
+                returnString += $"<tr><th align=\"left\">{model.GetDisplayName(nameof(model.TechnicalContactPhone))}</th><th align=\"left\"> {model?.TechnicalContactPhone ?? NotProvidedValue}</th></tr>";
+                if (model.TechnicalDetails != null)
+                {
+                    var techDetails = model.TechnicalDetails;
+                    returnString += "<tr><th align=\"center\">Technical Details></th><th></th></tr>";
+                    returnString += $"<tr><th align=\"left\">{techDetails.GetDisplayName(nameof(techDetails.RequestedShareName))}</th><th align=\"left\"> {techDetails?.RequestedShareName ?? NotProvidedValue}</th></tr>";
+                    returnString += $"<tr><th align=\"left\">{techDetails.GetDisplayName(nameof(techDetails.SupportNFS))}</th><th align=\"left\"> {(techDetails.SupportNFS ? "Yes" : "No")}</th></tr>";
+                    returnString += $"<tr><th align=\"left\">{techDetails.GetDisplayName(nameof(techDetails.SupportCIFS))}</th><th align=\"left\"> {(techDetails.SupportCIFS ? "Yes" : "No")}</th></tr>";
+                    returnString += $"<tr><th align=\"left\">{techDetails.GetDisplayName(nameof(techDetails.RequestedSubnet))}</th><th align=\"left\"> {techDetails?.RequestedSubnet ?? NotProvidedValue}</th></tr>";
+                }
+
+                returnString += "<tr><th align=\"center\">Azure Details></th><th></th></tr>";
+                returnString += $"<tr><th align=\"left\">{model.GetDisplayName(nameof(model.OfferId))}</th><th align=\"left\"> {model?.OfferId ?? NotProvidedValue}</th></tr>";
+                returnString += $"<tr><th align=\"left\">{model.GetDisplayName(nameof(model.PurchaserTenantId))}</th><th align=\"left\"> {model.PurchaserTenantId}</th></tr>";
+                returnString += $"<tr><th align=\"left\">{model.GetDisplayName(nameof(model.SubscriptionId))}</th><th align=\"left\"> {model.SubscriptionId}</th></tr>";
+                returnString += $"<tr><th align=\"left\">{model.GetDisplayName(nameof(model.SubscriptionName))}</th><th align=\"left\"> {model?.SubscriptionName ?? NotProvidedValue}</th></tr>";
+                returnString += $"<tr><th align=\"left\">{model.GetDisplayName(nameof(model.ExistingSpendCommitments))}</th><th align=\"left\"> {(model.ExistingSpendCommitments ? "Yes" : "No")}</th></tr>";
+
+                returnString += $"</table>";
+            }
+
+            return returnString;
         }
 
         private string BuildALink(
