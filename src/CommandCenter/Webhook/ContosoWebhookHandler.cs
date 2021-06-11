@@ -43,7 +43,6 @@ namespace CommandCenter.Webhook
                     payload.SubscriptionId,
                     payload.OperationId,
                     new UpdateOperation { PlanId = payload.PlanId, Status = UpdateOperationStatusEnum.Failure }).ConfigureAwait(false);
-
         }
 
         /// <inheritdoc/>
