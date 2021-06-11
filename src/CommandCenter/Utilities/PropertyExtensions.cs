@@ -9,12 +9,13 @@
 
     public static class PropertyExtensions
     {
-        public static string GetDisplayName<T>(this string property)
+        public static string GetDisplayName(this object instance, string property)
         {
-            MemberInfo propertyInfo = typeof(T).GetProperty(property);
+            Type t = instance.GetType();
+            MemberInfo propertyInfo = t.GetProperty(property);
             var displayAttribute = propertyInfo?.GetCustomAttribute(typeof(DisplayAttribute)) as DisplayAttribute;
 
-            return displayAttribute != null ? displayAttribute.Name : string.Empty;
+            return displayAttribute != null ? displayAttribute.Name : propertyInfo.Name;
         }
 
         public static string GetDisplayName(this Enum enumValue)
@@ -23,7 +24,7 @@
             .GetMember(enumValue.ToString())
             .First()
             .GetCustomAttribute<DisplayAttribute>()
-            ?.GetName();
+            ?.GetName() ?? enumValue.ToString();
         }
     }
 }

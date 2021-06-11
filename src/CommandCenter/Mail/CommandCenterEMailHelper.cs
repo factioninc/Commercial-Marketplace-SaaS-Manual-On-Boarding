@@ -242,7 +242,7 @@ namespace CommandCenter.Mail
             return $"<table border=\"1\" align=\"left\">{tableContents}</table>";
         }
 
-        private static string BuildTable(AzureSubscriptionProvisionModel model)
+        public static string BuildTable(AzureSubscriptionProvisionModel model)
         {
             var returnString = $"<table border=\"1\" align=\"left\">";
 
