@@ -25,11 +25,10 @@ namespace CommandCenter.Models
                     return new List<ActionsEnum>();
                 }
 
-                if (this.State == SubscriptionStatusEnum.Subscribed)
-                {
-                    return new List<ActionsEnum> { ActionsEnum.Update, ActionsEnum.Unsubscribe };
-                }
-
+                // if (this.State == SubscriptionStatusEnum.Subscribed)
+                // {
+                //     return new List<ActionsEnum> { ActionsEnum.Update, ActionsEnum.Unsubscribe };
+                // }
                 return new List<ActionsEnum>();
             }
         }
