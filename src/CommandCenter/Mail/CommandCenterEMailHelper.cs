@@ -234,14 +234,11 @@ namespace CommandCenter.Mail
                 cancellationToken).ConfigureAwait(false);
         }
 
-        private static string BuildTable(JObject parsed)
-        {
-            var tableContents = parsed.Properties().AsEnumerable()
-                .Select(p => $"<tr><th align=\"left\"> {p.Name} </th><th align=\"left\"> {p.Value}</th></tr>")
-                .Aggregate((head, tail) => head + tail);
-            return $"<table border=\"1\" align=\"left\">{tableContents}</table>";
-        }
-
+        /// <summary>
+        /// Builds an HTML table of the options entered by the user when building a new subscription.
+        /// </summary>
+        /// <param name="model">The data model associated with this provisioning request.</param>
+        /// <returns>An HTML table definition in string format.</returns>
         public static string BuildTable(AzureSubscriptionProvisionModel model)
         {
             var returnString = $"<table border=\"1\" align=\"left\">";
@@ -282,6 +279,14 @@ namespace CommandCenter.Mail
             }
 
             return returnString;
+        }
+
+        private static string BuildTable(JObject parsed)
+        {
+            var tableContents = parsed.Properties().AsEnumerable()
+                .Select(p => $"<tr><th align=\"left\"> {p.Name} </th><th align=\"left\"> {p.Value}</th></tr>")
+                .Aggregate((head, tail) => head + tail);
+            return $"<table border=\"1\" align=\"left\">{tableContents}</table>";
         }
 
         private string BuildALink(

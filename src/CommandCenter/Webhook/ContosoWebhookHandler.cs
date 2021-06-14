@@ -38,17 +38,11 @@ namespace CommandCenter.Webhook
                 throw new ArgumentNullException(nameof(payload));
             }
 
-            if (payload.Status == OperationStatusEnum.Succeeded)
-            {
-                await this.marketplaceClient.Operations.UpdateOperationStatusAsync(
-                        payload.SubscriptionId,
-                        payload.OperationId,
-                        new UpdateOperation { PlanId = payload.PlanId, Status = UpdateOperationStatusEnum.Success }).ConfigureAwait(false);
-            }
-            else if (payload.Status == OperationStatusEnum.Conflict || payload.Status == OperationStatusEnum.Failed)
-            {
-                await this.notificationHelper.ProcessOperationFailOrConflictAsync(payload).ConfigureAwait(false);
-            }
+            // Immediately fail all Update Operations and return
+            await this.marketplaceClient.Operations.UpdateOperationStatusAsync(
+                    payload.SubscriptionId,
+                    payload.OperationId,
+                    new UpdateOperation { PlanId = payload.PlanId, Status = UpdateOperationStatusEnum.Failure }).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -59,17 +53,11 @@ namespace CommandCenter.Webhook
                 throw new ArgumentNullException(nameof(payload));
             }
 
-            if (payload.Status == OperationStatusEnum.Succeeded)
-            {
-                await this.marketplaceClient.Operations.UpdateOperationStatusAsync(
-                        payload.SubscriptionId,
-                        payload.OperationId,
-                        new UpdateOperation { Quantity = payload.Quantity, Status = UpdateOperationStatusEnum.Success }).ConfigureAwait(false);
-            }
-            else if (payload.Status == OperationStatusEnum.Conflict || payload.Status == OperationStatusEnum.Failed)
-            {
-                await this.notificationHelper.ProcessOperationFailOrConflictAsync(payload).ConfigureAwait(false);
-            }
+            // Immediately reject all requests to change the quantity
+            await this.marketplaceClient.Operations.UpdateOperationStatusAsync(
+                    payload.SubscriptionId,
+                    payload.OperationId,
+                    new UpdateOperation { Quantity = payload.Quantity, Status = UpdateOperationStatusEnum.Failure }).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
