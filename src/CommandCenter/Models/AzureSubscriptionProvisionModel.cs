@@ -18,12 +18,6 @@ namespace CommandCenter.Models
     public class AzureSubscriptionProvisionModel
     {
         /// <summary>
-        ///  Gets or sets available plans.
-        /// </summary>
-        [Display(Name = "Available plans")]
-        public IList<Plan> AvailablePlans { get; set; }
-
-        /// <summary>
         /// Gets or sets business contact email.
         /// </summary>
         [Display(Name = "Business unit contact email")]
@@ -65,12 +59,6 @@ namespace CommandCenter.Models
         public string PlanId { get; set; }
 
         /// <summary>
-        /// Gets or sets the region.
-        /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
-        public TargetContosoRegionEnum Region { get; set; }
-
-        /// <summary>
         /// Gets or sets the subscription ID.
         /// </summary>
         [Display(Name = "SaaS Subscription Id")]
@@ -110,21 +98,27 @@ namespace CommandCenter.Models
         /// <summary>
         /// Gets or sets the technical contact name.
         /// </summary>
+        [Required(AllowEmptyStrings=false)]
         [Display(Name="Technical contact name")]
+        [StringLength(200, ErrorMessage ="Contact Name Must be at least 5 characters.", MinimumLength=5)]
         public string TechnicalContactName { get; set; }
 
         /// <summary>
         /// Gets or sets the technical contact email.
         /// </summary>
+        [Required]
         [Display(Name="Technical contact email")]
         [DataType(DataType.EmailAddress)]
+        [EmailAddress]
         public string TechnicalContactEmail { get; set; }
 
         /// <summary>
         /// Gets or sets the technical contact phone number.
         /// </summary>
+        [Required]
         [Display(Name="Technical contact phone number")]
         [DataType(DataType.PhoneNumber)]
+        [Phone]
         public string TechnicalContactPhone { get; set; }
 
         /// <summary>

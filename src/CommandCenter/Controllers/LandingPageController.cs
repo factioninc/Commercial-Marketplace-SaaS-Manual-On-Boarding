@@ -111,8 +111,6 @@ namespace CommandCenter.Controllers
 
                 // Assuming this will be set to the value the customer already set when subscribing, if we are here after the initial subscription activation
                 // Landing page is used both for initial provisioning and configuration of the subscription.
-                Region = TargetContosoRegionEnum.NorthAmerica,
-                AvailablePlans = availablePlans?.Value.Plans.ToList(),
                 SubscriptionStatus = existingSubscription?.SaasSubscriptionStatus ?? SubscriptionStatusEnum.NotStarted,
                 PendingOperations = pendingOperations?.Value.Operations?.Any(o => o.Status == OperationStatusEnum.InProgress) ?? false,
             };
@@ -132,6 +130,7 @@ namespace CommandCenter.Controllers
                     provisioningModel.CustomBundleOptions = null;
                 }
 
+                this.TryValidateModel(provisioningModel);
                 return this.View(provisioningModel);
             }
 
@@ -141,6 +140,7 @@ namespace CommandCenter.Controllers
             // This is just for testing or Demo purposes
             // var model = new AzureSubscriptionProvisionModel();
             // model.CustomBundleOptions = new FactionCustomBundleModel();
+            // this.TryValidateModel(model);
             // return this.View(model);
         }
 
@@ -161,28 +161,30 @@ namespace CommandCenter.Controllers
 
             if (!this.ModelState.IsValid)
             {
-                return this.View();
+                return this.View(provisionModel);
             }
-
-            var urlBase = $"{this.Request.Scheme}://{this.Request.Host}";
-            this.options.BaseUrl = new Uri(urlBase);
-            try
+            else
             {
-                // A new subscription will have PendingFulfillmentStart as status
-                if (provisionModel.SubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
+                var urlBase = $"{this.Request.Scheme}://{this.Request.Host}";
+                this.options.BaseUrl = new Uri(urlBase);
+                try
                 {
-                    await this.notificationHandler.ProcessNewSubscriptionAsyc(provisionModel, cancellationToken).ConfigureAwait(false);
-                }
-                else
-                {
-                    await this.notificationHandler.ProcessChangePlanAsync(provisionModel, cancellationToken).ConfigureAwait(false);
-                }
+                    // A new subscription will have PendingFulfillmentStart as status
+                    if (provisionModel.SubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
+                    {
+                        await this.notificationHandler.ProcessNewSubscriptionAsyc(provisionModel, cancellationToken).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await this.notificationHandler.ProcessChangePlanAsync(provisionModel, cancellationToken).ConfigureAwait(false);
+                    }
 
-                return this.RedirectToAction(nameof(this.Success));
-            }
-            catch (Exception ex)
-            {
-                return this.BadRequest(ex);
+                    return this.RedirectToAction(nameof(this.Success));
+                }
+                catch (Exception ex)
+                {
+                    return this.BadRequest(ex);
+                }
             }
         }
 
