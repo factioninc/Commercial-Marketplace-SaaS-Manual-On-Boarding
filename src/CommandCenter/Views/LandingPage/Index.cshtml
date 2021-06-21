@@ -14,10 +14,47 @@
 }
 else
 {
+    @section Scripts
+    {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+        @if (Model.CustomBundleOptions != null)
+        {
+            <script type="text/javascript">
+                function loadOptions() {
+                    var url = '/api/FactionCustomBundleOptions?performanceTier=' + $('#performanceTierDropdown option:selected').text();
+
+                    $.ajax({
+                        url: url,
+                        type: "get",
+                        cache: false,
+                    }).done(function (data) {
+                        var sizeDropDown = $('#storageSizeDropdown');
+                        sizeDropDown.empty();
+
+                        $.each(data["possibleStorageSizes"], function (index, size) {
+                            sizeDropDown.append(
+                                $("<option>", { value: size }).text(size)
+                            );
+                        });
+                        var bandwidthDropdown = $('#bandwidthDropdown');
+                        bandwidthDropdown.empty();
+                        $.each(data["possibleBandwidthOptions"], function (index, bandwidth) {
+                            bandwidthDropdown.append(
+                                $("<option>", { value: bandwidth }).text(bandwidth)
+                            );
+                        });
+                    });
+                };
+
+                $(function () { loadOptions(); });
+                $('#performanceTierDropdown').change(function () { loadOptions(); });
+            </script>
+        }
+    }
+
     <p>Please answer the following questions below.  These items are needed in order to properly set up your selected plan.  Once submitted, Faction resources will begin the setup process.</p>
     <br />
-    <span class="text-danger">@Html.ValidationSummary(false)</span>
-
     <form asp-controller="LandingPage" asp-action="Index">
         <div class="container">
             <dl class="row">
@@ -84,6 +121,7 @@ else
                             </div>
                             <div class="col-sm-9">
                                 <input asp-for="TechnicalContactName" type="text" class="form-control" />
+                                <span class="text-danger" asp-validation-for="TechnicalContactName"></span>
                             </div>
                         </div>
                         <div class="row">
@@ -92,6 +130,7 @@ else
                             </div>
                             <div class="col-sm-9">
                                 <input asp-for="TechnicalContactEmail" type="email" class="form-control" />
+                                <span class="text-danger" asp-validation-for="TechnicalContactEmail" )></span>
                             </div>
                         </div>
                         <div class="row">
@@ -100,6 +139,7 @@ else
                             </div>
                             <div class="col-sm-9">
                                 <input asp-for="TechnicalContactPhone" type="text" class="form-control" />
+                                <span class="text-danger" asp-validation-for="TechnicalContactPhone"></span>
                             </div>
                         </div>
                     </div>
@@ -195,7 +235,7 @@ else
                             </div>
                             <div class="col-sm-9">
                                 @Html.DisplayFor(model => model.SubscriptionName)
-                                <input asp-for="SubscriptionName" type="hidden" class="form-control"/>
+                                <input asp-for="SubscriptionName" type="hidden" class="form-control" />
                             </div>
                         </div>
                         <div class="row">
@@ -219,40 +259,4 @@ else
                    class="btn btn-primary" />
         </div>
     </form>
-    @if (Model.CustomBundleOptions != null)
-    {
-        @section Scripts
-        {
-            <script type="text/javascript">
-                function loadOptions() {
-                    var url = '/api/FactionCustomBundleOptions?performanceTier=' + $('#performanceTierDropdown option:selected').text();
-
-                    $.ajax({
-                        url: url,
-                        type: "get",
-                        cache: false,
-                    }).done(function (data) {
-                        var sizeDropDown = $('#storageSizeDropdown');
-                        sizeDropDown.empty();
-
-                        $.each(data["possibleStorageSizes"], function (index, size) {
-                            sizeDropDown.append(
-                            $("<option>", { value: size }).text(size)
-                            );
-                        });
-                        var bandwidthDropdown = $('#bandwidthDropdown');
-                        bandwidthDropdown.empty();
-                        $.each(data["possibleBandwidthOptions"], function (index, bandwidth) {
-                            bandwidthDropdown.append(
-                            $("<option>", { value: bandwidth }).text(bandwidth)
-                            );
-                        });
-                    });
-                };
-
-                $(function () { loadOptions(); });
-                $('#performanceTierDropdown').change(function () { loadOptions(); });
-            </script>
-            }
-        }
-    }
+}

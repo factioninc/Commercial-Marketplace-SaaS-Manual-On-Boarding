@@ -24,14 +24,12 @@ namespace CommandCenter.Models
         /// Gets or sets the Requested Storage Size.
         /// </summary>
         [Display(Name ="Requested Storage Size")]
-        [Required]
         public string RequestedStorageSize { get; set; }
 
         /// <summary>
         /// Gets or sets the Requested Bandwidth.
         /// </summary>
         [Display(Name ="Requested Bandwidth")]
-        [Required]
         public string RequestedBandwidth { get; set; }
     }
 }

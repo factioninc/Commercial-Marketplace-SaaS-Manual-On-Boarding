@@ -7,8 +7,6 @@
 // a specific target and scoped to a namespace, type, member, etc.
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "By design", Scope = "member", Target = "~P:CommandCenter.Models.AzureSubscriptionProvisionModel.AvailablePlans")]
-[assembly: SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "By design", Scope = "member", Target = "~P:CommandCenter.Models.UpdateSubscriptionViewModel.AvailablePlans")]
 [assembly: SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "By design", Scope = "member", Target = "~P:CommandCenter.Models.OperationsViewModel.Operations")]
 [assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "By design", Scope = "member", Target = "~M:CommandCenter.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)")]
 [assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "By design", Scope = "member", Target = "~M:CommandCenter.StringExtensions.GetDomainNameFromEmail(System.String)~System.String")]
