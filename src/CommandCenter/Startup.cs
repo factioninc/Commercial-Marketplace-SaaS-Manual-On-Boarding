@@ -190,9 +190,8 @@ namespace CommandCenter
 
             services.AddSingleton<IAuthorizationHandler, CommandCenterAdminHandler>();
 
-            services.TryAddScoped<IRequestPersistenceStore>(sp =>
-                new RequestPersistenceStore(this.configuration["CommandCenter:RequestPersistenceStoreConnectionString"]));
-
+            services.Configure<PersistenceStoreOptions>(this.configuration.GetSection("PersistenceStore"));
+            services.TryAddScoped<IRequestPersistenceStore, RequestPersistenceStore>();
             services.AddControllersWithViews();
 
             services.AddRazorPages()

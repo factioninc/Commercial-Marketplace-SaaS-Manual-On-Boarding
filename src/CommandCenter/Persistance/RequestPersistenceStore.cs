@@ -3,42 +3,45 @@
 
 namespace CommandCenter.Persistance
 {
-    using CommandCenter.Models;
-    using Microsoft.Azure.Cosmos;
-    using Microsoft.Azure.Cosmos.Linq;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using CommandCenter.Models;
+    using Microsoft.Azure.Cosmos;
+    using Microsoft.Azure.Cosmos.Linq;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
 
     /// <summary>
     /// Class to manage the persistence of Request to and from an Azure CosmosDB instance.
     /// </summary>
     public class RequestPersistenceStore : IRequestPersistenceStore
     {
-        private const string CosmosDBName = "Faction_Marketplace";
-        private const string CosmosRequestsContainerName = "Requests";
-
+        private readonly string cosmosDBName;
+        private readonly string cosmosRequestsContainerName;
         private readonly string cosmosDBConnectionString;
         private readonly CosmosClient cosmosClient;
         private Database cosmosDatabase;
         private Container cosmosRequestContainer;
+        private ILogger<RequestPersistenceStore> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RequestPersistenceStore"/> class.
         /// </summary>
-        /// <param name="cosmosDBConnectionString">A string instance containing the Connection string for the Cosmos DB instance to be used.</param>
-        public RequestPersistenceStore(string cosmosDBConnectionString)
+        /// <param name="storeOptions">The store options.</param>
+        /// <param name="logger">The logger instance.</param>
+        public RequestPersistenceStore(IOptionsMonitor<PersistenceStoreOptions> storeOptions, ILogger<RequestPersistenceStore> logger)
         {
-            this.cosmosDBConnectionString = cosmosDBConnectionString;
+            this.cosmosDBConnectionString = storeOptions.CurrentValue.ConnectionString;
+            this.cosmosDBName = storeOptions.CurrentValue.DatabaseName;
+            this.cosmosRequestsContainerName = storeOptions.CurrentValue.ContainerName;
+            this.logger = logger;
+
             this.cosmosClient = new CosmosClient(this.cosmosDBConnectionString);
         }
 
-        /// <summary>
-        /// Inserts a new Subscription Request into Cosmos DB.
-        /// </summary>
-        /// <param name="modelToInsert">The instance of the <see cref="AzureSubscriptionProvisionModel"/> representing the request to be persisted.</param>
-        /// <returns>A Task instance, with the result being the success or failure of the request to Insert.</returns>
+        /// <inheritdoc/>
         public async Task<bool> InsertRequestAsync(AzureSubscriptionProvisionModel modelToInsert)
         {
             // Return False if we cannot connect to the Cosmos instance.
@@ -65,6 +68,7 @@ namespace CommandCenter.Persistance
             }
             catch (CosmosException ce)
             {
+                this.logger.LogError($"Error Creating Request Document.  Subscription ID: {modelToInsert.SubscriptionId}. Message: {ce.Message}");
                 return false;
             }
 
@@ -72,28 +76,32 @@ namespace CommandCenter.Persistance
         }
 
 #nullable enable
-        /// <summary>
-        /// Retrieves an instance of the <see cref="AzureSubscriptionProvisionModel"/> based on the supplied subscription Id.
-        /// </summary>
-        /// <param name="subscriptionId">The unique identifier for the requested subscription.</param>
-        /// <returns>An instance of the <see cref="AzureSubscriptionProvisionModel"/> if a previous request has been persisted, otherwise null.</returns>
+        /// <inheritdoc/>
         public async Task<AzureSubscriptionProvisionModel?> GetRequestBySubscriptionIdAsync(Guid subscriptionId)
         {
             if (!await this.CreateResourcesAsync())
             {
+                this.logger.LogError("Could not Retrieve existing requests.");
                 return null;
             }
 
-            using (var linqIterator =
-                this.cosmosRequestContainer.GetItemLinqQueryable<AzureSubscriptionProvisionModel>()
-                    .Where(i => i.SubscriptionId == subscriptionId)
-                    .ToFeedIterator<AzureSubscriptionProvisionModel>())
+            try
             {
-                if (linqIterator.HasMoreResults)
+                using (var linqIterator =
+                    this.cosmosRequestContainer.GetItemLinqQueryable<AzureSubscriptionProvisionModel>()
+                        .Where(i => i.SubscriptionId == subscriptionId)
+                        .ToFeedIterator<AzureSubscriptionProvisionModel>())
                 {
-                    var response = await linqIterator.ReadNextAsync();
-                    return response.FirstOrDefault();
+                    if (linqIterator.HasMoreResults)
+                    {
+                        var response = await linqIterator.ReadNextAsync();
+                        return response.FirstOrDefault();
+                    }
                 }
+            }
+            catch (CosmosException ce)
+            {
+                this.logger.LogError($"Error retrieving Request Documents. Message: {ce.Message}");
             }
 
             return null;
@@ -106,10 +114,11 @@ namespace CommandCenter.Persistance
             {
                 try
                 {
-                    this.cosmosDatabase = await this.cosmosClient.CreateDatabaseIfNotExistsAsync(CosmosDBName);
+                    this.cosmosDatabase = await this.cosmosClient.CreateDatabaseIfNotExistsAsync(this.cosmosDBName);
                 }
                 catch (CosmosException ce)
                 {
+                    this.logger.LogError($"Error Creating or opening Cosmos Database Instance.  Name: {this.cosmosDBName}. Message: {ce.Message}");
                     return false;
                 }
             }
@@ -118,10 +127,11 @@ namespace CommandCenter.Persistance
             {
                 try
                 {
-                    this.cosmosRequestContainer = await this.cosmosDatabase.CreateContainerIfNotExistsAsync(CosmosRequestsContainerName, "/SubscriptionId");
+                    this.cosmosRequestContainer = await this.cosmosDatabase.CreateContainerIfNotExistsAsync(this.cosmosRequestsContainerName, "/SubscriptionId");
                 }
                 catch (CosmosException ce)
                 {
+                    this.logger.LogError($"Error Creating or opening Cosmos Container Instance.  Name: {this.cosmosRequestsContainerName}. Message: {ce.Message}");
                     return false;
                 }
             }
