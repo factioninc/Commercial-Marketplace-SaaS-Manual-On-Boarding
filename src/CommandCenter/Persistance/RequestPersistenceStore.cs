@@ -47,6 +47,12 @@ namespace CommandCenter.Persistance
                 return false;
             }
 
+            // Model to Insert does not contain a valid subscription Id
+            if (modelToInsert.SubscriptionId == Guid.Empty)
+            {
+                return false;
+            }
+
             // Return True if an instance has already been persisted for this subscription.
             if (await this.GetRequestBySubscriptionIdAsync(modelToInsert.SubscriptionId) != null)
             {
