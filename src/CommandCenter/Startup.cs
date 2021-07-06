@@ -12,6 +12,7 @@ namespace CommandCenter
     using CommandCenter.Mail;
     using CommandCenter.Marketplace;
     using CommandCenter.OperationsStore;
+    using CommandCenter.Persistance;
     using CommandCenter.Webhook;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -188,6 +189,9 @@ namespace CommandCenter
                     }));
 
             services.AddSingleton<IAuthorizationHandler, CommandCenterAdminHandler>();
+
+            services.TryAddScoped<IRequestPersistenceStore>(sp =>
+                new RequestPersistenceStore(this.configuration["CommandCenter:RequestPersistenceStoreConnectionString"]));
 
             services.AddControllersWithViews();
 
