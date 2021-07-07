@@ -20,7 +20,8 @@ namespace CommandCenter.Persistance
     {
         private readonly string cosmosDBName;
         private readonly string cosmosRequestsContainerName;
-        private readonly string cosmosDBConnectionString;
+        private readonly string cosmosDBEndpoint;
+        private readonly string cosmosPrimaryKey;
         private readonly CosmosClient cosmosClient;
         private Database cosmosDatabase;
         private Container cosmosRequestContainer;
@@ -33,12 +34,13 @@ namespace CommandCenter.Persistance
         /// <param name="logger">The logger instance.</param>
         public RequestPersistenceStore(IOptionsMonitor<PersistenceStoreOptions> storeOptions, ILogger<RequestPersistenceStore> logger)
         {
-            this.cosmosDBConnectionString = storeOptions.CurrentValue.ConnectionString;
+            this.cosmosDBEndpoint = storeOptions.CurrentValue.Endpoint;
+            this.cosmosPrimaryKey = storeOptions.CurrentValue.PrimaryKey;
             this.cosmosDBName = storeOptions.CurrentValue.DatabaseName;
             this.cosmosRequestsContainerName = storeOptions.CurrentValue.ContainerName;
             this.logger = logger;
 
-            this.cosmosClient = new CosmosClient(this.cosmosDBConnectionString);
+            this.cosmosClient = new CosmosClient(this.cosmosDBEndpoint, this.cosmosPrimaryKey);
         }
 
         /// <inheritdoc/>

@@ -14,9 +14,14 @@ namespace CommandCenter
     public class PersistenceStoreOptions
     {
         /// <summary>
-        /// Gets or sets the Connection String property.
+        /// Gets or sets the Endpoint property.
         /// </summary>
-        public string ConnectionString { get; set; }
+        public string Endpoint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Primary Key property.
+        /// </summary>
+        public string PrimaryKey { get; set; }
 
         /// <summary>
         /// Gets or sets the Database name.
