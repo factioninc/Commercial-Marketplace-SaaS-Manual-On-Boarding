@@ -34,7 +34,7 @@ namespace CommandCenter.Controllers
         private readonly IMarketplaceSaaSClient marketplaceClient;
         private readonly CommandCenterOptions options;
         private readonly IRequestPersistenceStore requestPersistenceStore;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="LandingPageController"/> class.
         /// </summary>
