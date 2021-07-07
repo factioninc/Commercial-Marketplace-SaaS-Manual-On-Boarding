@@ -11,6 +11,7 @@ namespace CommandCenter.Controllers
     using CommandCenter.Authorization;
     using CommandCenter.Marketplace;
     using CommandCenter.Models;
+    using CommandCenter.Persistance;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -32,6 +33,7 @@ namespace CommandCenter.Controllers
         private readonly IMarketplaceNotificationHandler notificationHandler;
         private readonly IMarketplaceSaaSClient marketplaceClient;
         private readonly CommandCenterOptions options;
+        private readonly IRequestPersistenceStore requestPersistenceStore;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LandingPageController"/> class.
@@ -40,12 +42,14 @@ namespace CommandCenter.Controllers
         /// <param name="marketplaceProcessor">Marketplace processor.</param>
         /// <param name="notificationHandler">Notification handler.</param>
         /// <param name="marketplaceClient">Marketplace client.</param>
+        /// <param name="requestPersistenceStore">Request Persistence Store.</param>
         /// <param name="logger">Logger.</param>
         public LandingPageController(
             IOptionsMonitor<CommandCenterOptions> commandCenterOptions,
             IMarketplaceProcessor marketplaceProcessor,
             IMarketplaceNotificationHandler notificationHandler,
             IMarketplaceSaaSClient marketplaceClient,
+            IRequestPersistenceStore requestPersistenceStore,
             ILogger<LandingPageController> logger)
         {
             if (commandCenterOptions == null)
@@ -58,6 +62,7 @@ namespace CommandCenter.Controllers
             this.marketplaceClient = marketplaceClient;
             this.logger = logger;
             this.options = commandCenterOptions.CurrentValue;
+            this.requestPersistenceStore = requestPersistenceStore;
         }
 
         /// <summary>
@@ -88,11 +93,16 @@ namespace CommandCenter.Controllers
             // resolvedSubscription.Subscription is null when calling mock endpoint
             var existingSubscription = resolvedSubscription.Subscription;
 
-            var availablePlans = await this.marketplaceClient.Fulfillment.ListAvailablePlansAsync(
-                resolvedSubscription.Id.Value,
-                null,
-                null,
-                cancellationToken).ConfigureAwait(false);
+            // var availablePlans = await this.marketplaceClient.Fulfillment.ListAvailablePlansAsync(
+            //    resolvedSubscription.Id.Value,
+            //    null,
+            //    null,
+            //    cancellationToken).ConfigureAwait(false);
+            var existingRequest = await this.requestPersistenceStore.GetRequestBySubscriptionIdAsync(resolvedSubscription.Id.Value);
+            if (existingRequest != null)
+            {
+                return this.RedirectToAction(nameof(this.RequestSubmitted));
+            }
 
             var pendingOperations = await this.marketplaceClient.Operations.ListOperationsAsync(
                 resolvedSubscription.Id.Value,
@@ -165,6 +175,8 @@ namespace CommandCenter.Controllers
             }
             else
             {
+                var result = await this.requestPersistenceStore.InsertRequestAsync(provisionModel);
+
                 var urlBase = $"{this.Request.Scheme}://{this.Request.Host}";
                 this.options.BaseUrl = new Uri(urlBase);
                 try
@@ -193,6 +205,15 @@ namespace CommandCenter.Controllers
         /// </summary>
         /// <returns>Action result.</returns>
         public ActionResult Success()
+        {
+            return this.View();
+        }
+
+        /// <summary>
+        /// Request Submitted.
+        /// </summary>
+        /// <returns>Action result.</returns>
+        public ActionResult RequestSubmitted()
         {
             return this.View();
         }

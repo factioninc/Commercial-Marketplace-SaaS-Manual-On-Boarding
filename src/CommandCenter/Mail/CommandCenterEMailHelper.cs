@@ -285,10 +285,12 @@ namespace CommandCenter.Mail
             return returnString;
         }
 
+#nullable enable
         private static string BuildRow(string displayName, string? valueAsString)
         {
             return $"<tr><th align=\"left\">{displayName}</th><th align=\"left\"> {valueAsString ?? NotProvidedValue}</th></tr>";
         }
+#nullable restore
 
         private static string BuildTable(JObject parsed)
         {

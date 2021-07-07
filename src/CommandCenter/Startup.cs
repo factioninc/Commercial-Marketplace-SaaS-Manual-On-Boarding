@@ -22,6 +22,7 @@ namespace CommandCenter
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Configuration.UserSecrets;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Hosting;
@@ -190,9 +191,8 @@ namespace CommandCenter
 
             services.AddSingleton<IAuthorizationHandler, CommandCenterAdminHandler>();
 
-            services.TryAddScoped<IRequestPersistenceStore>(sp =>
-                new RequestPersistenceStore(this.configuration["CommandCenter:RequestPersistenceStoreConnectionString"]));
-
+            services.Configure<PersistenceStoreOptions>(this.configuration.GetSection("PersistenceStore"));
+            services.TryAddScoped<IRequestPersistenceStore, RequestPersistenceStore>();
             services.AddControllersWithViews();
 
             services.AddRazorPages()
